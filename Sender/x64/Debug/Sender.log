@@ -1,0 +1,4 @@
+﻿  Sender.c
+C:\Users\USER\source\repos\Intro to communication PA1\Sender\Sender.c(43,41): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\USER\source\repos\Intro to communication PA1\Sender\Sender.c(54,23): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Sender.vcxproj -> C:\Users\USER\source\repos\Intro to communication PA1\x64\Debug\Sender.exe

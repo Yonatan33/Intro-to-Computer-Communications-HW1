@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "b19b27b4-7e7c-4dbc-9cfc-d5618b8e5972": {
+      "ProjectGuid": "b19b27b4-7e7c-4dbc-9cfc-d5618b8e5972",
+      "DisplayName": "Sender",
+      "ColorIndex": 0
+    },
+    "e7bcf31a-dfdd-4ae9-a737-0b7a80114f60": {
+      "ProjectGuid": "e7bcf31a-dfdd-4ae9-a737-0b7a80114f60",
+      "DisplayName": "Utils",
+      "ColorIndex": 1
+    },
+    "9d517e74-b759-49d7-ad78-38c6139b72eb": {
+      "ProjectGuid": "9d517e74-b759-49d7-ad78-38c6139b72eb",
+      "DisplayName": "Receiver",
+      "ColorIndex": 2
+    }
+  },
+  "NextColorIndex": 3
+}
