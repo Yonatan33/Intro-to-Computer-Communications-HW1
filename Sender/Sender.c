@@ -1,80 +1,105 @@
-/* Ofir Yaffe - , Yonatan Gartenberg - 311126205 */
-#define _CRT_SECURE_NO_WARNINGS
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include <stdio.h>
-#include <WinSock2.h>
-#include "../Utils/Constants.h"
+/* Ofir Yoffe - 303166318, Yonatan Gartenberg - 311126205 */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <WinSock2.h>
+#include <math.h>
+#include "../Utils/Common.h"
+#include "../Utils/WinSock_handlers.h"
 
 #pragma comment(lib, "Ws2_32.lib")
-#define REMOTE_HOST_IP "127.0.0.1" 
-#define IN_PORT 6342 
 
-int main(int argc, char* argv[])
-{
-	SOCKET TCPClientSocket;
-	WSADATA wsaData;
-	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (iResult != NO_ERROR)
-	{
-		printf("Error at WSAStartup()\n");
-	}
-		
-	TCPClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (TCPClientSocket == INVALID_SOCKET)
-	{
-		printf("Scoket creation failed with error: %d", WSAGetLastError());
-	}
+void encode(const char *input_ptr, char *buf_output) {
+    memset(buf_output, '0', HAMMING_N); // zero output buffer
 
-	struct sockaddr_in remote_addr;
+    // copy input to output, skipping hamming bits (indexes 1,2,4,8,16)
+    for (int input_i = 1, output_i = 1; output_i <= HAMMING_N; output_i++) {
+        if (output_i == 1 || output_i == 2 || output_i == 4 || output_i == 8 || output_i == 16) {
+            continue;
+        }
+        buf_output[output_i - 1] = input_ptr[input_i - 1];
+        input_i++;
+    }
 
-	remote_addr.sin_family = AF_INET;
-	remote_addr.sin_addr.s_addr = inet_addr(REMOTE_HOST_IP);
-	remote_addr.sin_port = htons(IN_PORT);
+    // calculate hamming bits
+    for (int input_i = 1; input_i <= HAMMING_K; input_i++) {
+        if ('1' == input_ptr[input_i]) { // xor with hamming bits
+            if (1 == ((input_i) & 1))
+                buf_output[0] = ('0' == buf_output[0]) ? '1' : '0';
+            if (2 == ((input_i) & 2))
+                buf_output[1] = ('0' == buf_output[1]) ? '1' : '0';
+            if (4 == ((input_i) & 4))
+                buf_output[3] = ('0' == buf_output[3]) ? '1' : '0';
+            if (8 == ((input_i) & 8))
+                buf_output[7] = ('0' == buf_output[7]) ? '1' : '0';
+            if (16 == ((input_i) & 16))
+                buf_output[15] = ('0' == buf_output[15]) ? '1' : '0';
+        }
+    }
+}
 
-	int status = connect(TCPClientSocket, (SOCKADDR*)&remote_addr, sizeof(remote_addr));
-	if (status == SOCKET_ERROR)
-	{
-		printf("Connection failed with error: %d", WSAGetLastError());
-	}
+char *file_to_bits(FILE *fp, int *size) {
+    // find out file size (int bytes)
+    fseek(fp, 0L, SEEK_END);
+    *size = ftell(fp) * 8;
+    fseek(fp, 0L, SEEK_SET);
 
-	int iReceive;
-	char receive_buf[MSG_SIZE];
-	int iReceiveBuf = strlen( receive_buf) + 1;
-	iReceive = recv(TCPClientSocket, receive_buf, iReceiveBuf, 0);
+    // convert file bits to bytes
+    char *file_bits = malloc(*size);
+    char buf;
+    while (0 < fread(&buf, 1, 1, fp)) {
+        for (int i = 7; i >= 0; i--) {
+            int current_bit_index = (ftell(fp) - 1) * 8 + (7 - i);
+            int current_bit = (buf >> i) & 1;
+            file_bits[current_bit_index] = (char) (current_bit + '0');
+        }
+    }
+    return file_bits;
+}
 
-	if (iReceive == SOCKET_ERROR)
-	{
-		printf("Receive data failed with error: %d", WSAGetLastError());
-	}
+static void send_file(SOCKET *socket, FILE *fp) {
+    char buf_output[HAMMING_N] = {0};
+    int file_size_in_bits = 0, total_sent_size = 0;
+    int sent_size;
 
+    char *file_bits = file_to_bits(fp, &file_size_in_bits);
 
-	char send_buf[MSG_SIZE] = "TESTTEST";
-	int iSendBuf = strlen(send_buf);
-	/*debug*/
-	/*strcpy(send_buf, "TEST");*/
+    for (int i = 0; i < file_size_in_bits; i += HAMMING_K) {
+        encode(file_bits + i, buf_output); // encode with hamming
+        if (SOCKET_ERROR == (sent_size = s_send(socket, buf_output, HAMMING_N))) {
+            printf("Sending failed with error: %d\n", WSAGetLastError());
+            break;
+        }
+        total_sent_size += sent_size;
+    }
+    fclose(fp);
+    printf("file length: %d bytes\n", file_size_in_bits / 8);
+    printf("sent: %d bytes\n", total_sent_size / 8);
+}
 
-	int iSend = send(TCPClientSocket, send_buf, MSG_SIZE, 0);
-	if (iSend == SOCKET_ERROR)
-	{
-		printf("Sending to server failed with error: %d", WSAGetLastError());
-	}
+int main(int argc, char *argv[]) {
 
-	int iCloseSocket;
-	iCloseSocket = closesocket(TCPClientSocket);
+    WSADATA wsaData;
+    SOCKET socket;
+    FILE *fp;
+    char *channel_ip;
+    int channel_port;
 
-	if (iCloseSocket == SOCKET_ERROR)
-	{
-		printf("Closing socket failed with error: %d", WSAGetLastError());
-	}
+    parse_args(argc, argv, &channel_ip, &channel_port);
+    s_startup(&wsaData);
+    s_socket(&socket);
+    s_connect(&socket, channel_ip, channel_port);
 
-	int iWsaCleanup;
-	iWsaCleanup = WSACleanup();
-	if (iWsaCleanup == SOCKET_ERROR)
-	{
-		printf("Cleanup socket failed with error: %d", WSAGetLastError());
-	}
+    while (NULL != (fp = read_file_name_from_user("r"))) { // loop until "quit"
+        send_file(&socket, fp);
+        s_shutdown(&socket, SD_BOTH);
+        s_close(&socket);
+        s_socket(&socket);
+        s_connect(&socket, channel_ip, channel_port);
+    }
 
-	return 0;
-
+    s_shutdown(&socket, SD_BOTH);
+    s_close(&socket);
+    s_cleanup();
+    return EXIT_SUCCESS;
 }
