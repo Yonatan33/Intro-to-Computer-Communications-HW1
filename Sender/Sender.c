@@ -22,17 +22,17 @@ void encode(const char *input_ptr, char *buf_output) {
     }
 
     // calculate hamming bits
-    for (int input_i = 1; input_i <= HAMMING_K; input_i++) {
-        if ('1' == input_ptr[input_i]) { // xor with hamming bits
-            if (1 == ((input_i) & 1))
+    for (int output_i = 1; output_i <= HAMMING_N; output_i++) {
+        if ('1' == buf_output[output_i - 1]) { // xor with hamming bits
+            if (1 == ((output_i) & 1))
                 buf_output[0] = ('0' == buf_output[0]) ? '1' : '0';
-            if (2 == ((input_i) & 2))
+            if (2 == ((output_i) & 2))
                 buf_output[1] = ('0' == buf_output[1]) ? '1' : '0';
-            if (4 == ((input_i) & 4))
+            if (4 == ((output_i) & 4))
                 buf_output[3] = ('0' == buf_output[3]) ? '1' : '0';
-            if (8 == ((input_i) & 8))
+            if (8 == ((output_i) & 8))
                 buf_output[7] = ('0' == buf_output[7]) ? '1' : '0';
-            if (16 == ((input_i) & 16))
+            if (16 == ((output_i) & 16))
                 buf_output[15] = ('0' == buf_output[15]) ? '1' : '0';
         }
     }
@@ -66,6 +66,7 @@ static void send_file(SOCKET *socket, FILE *fp) {
 
     for (int i = 0; i < file_size_in_bits; i += HAMMING_K) {
         encode(file_bits + i, buf_output); // encode with hamming
+        printf("Bytes received: %.*s %.*s\n", HAMMING_K, file_bits + i, HAMMING_N, buf_output); // TODO erase
         if (SOCKET_ERROR == (sent_size = s_send(socket, buf_output, HAMMING_N))) {
             printf("Sending failed with error: %d\n", WSAGetLastError());
             break;

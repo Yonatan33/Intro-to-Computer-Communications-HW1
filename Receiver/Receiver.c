@@ -24,18 +24,16 @@ int decode(char *buf_input, char *buf_output) {
 
     // calculate error index
     int error_index = 0;
-    error_index |= check_parity(buf_input, HAMMING_N, 1 << 0) << 0;
-    error_index |= check_parity(buf_input, HAMMING_N, 1 << 1) << 1;
-    error_index |= check_parity(buf_input, HAMMING_N, 1 << 2) << 2;
-    error_index |= check_parity(buf_input, HAMMING_N, 1 << 3) << 3;
-    error_index |= check_parity(buf_input, HAMMING_N, 1 << 4) << 4;
+    for (int i=0;i<=4;i++){
+        error_index |= check_parity(buf_input, HAMMING_N, 1 << i) << i;
+    }
 
-    // correct if needed
+    // correct if needed (error_index != 0)
     if (0 != error_index) {
         buf_input[error_index - 1] = (buf_input[error_index - 1] == '0') ? '1' : '0';
     }
 
-    // copy input to output, skipping hamming bits (indexes 1,2,4,8,16)
+    // copy input to output, skipping hamming bits
     for (int input_i = 1, output_i = 1; input_i <= HAMMING_N; input_i++) {
         if (input_i == 1 || input_i == 2 || input_i == 4 || input_i == 8 || input_i == 16) {
             continue;
