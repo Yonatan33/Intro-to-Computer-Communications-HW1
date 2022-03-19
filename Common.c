@@ -6,14 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parse_args(int argc, char *argv[], char **channel_ip, int *channel_send_port) {
+void parse_args(int argc, char *argv[], char **channel_ip, int *channel_port) {
     if (argc != 3) {
-        printf("Sender Error! no. of arguments != 3");
+        printf("Sender/Channel Error! no. of arguments != 3");
         exit(EXIT_FAILURE);
     }
 
     *channel_ip = argv[1];
-    *channel_send_port = strtol(argv[2], NULL, 10);
+    *channel_port = strtol(argv[2], NULL, 10);
 }
 
 FILE *read_file_name_from_user(char *mode) {

@@ -27,4 +27,6 @@ int s_recv(const SOCKET *socket, char *recv_buf, int recv_buf_len);
 
 void s_shutdown(SOCKET *socket, int how);
 
+char *get_my_ip();
+
 #endif

@@ -13,7 +13,7 @@
 
 void parse_channel_args(int argc, char *argv[], bool *flag_random, int *n, int *seed) {
     if (argc < 3 || argc > 4) {
-        printf("Sender Error! no. of arguments < 2 or > 3");
+        printf("Channel Error! no. of arguments < 2 or > 3");
         exit(EXIT_FAILURE);
     }
 
@@ -28,7 +28,7 @@ void parse_channel_args(int argc, char *argv[], bool *flag_random, int *n, int *
 }
 
 int read_continue_from_user() {
-    char input[MAX_INPUT] = { 0 };
+    char input[MAX_INPUT] = {0};
     printf("continue? (yes/no)\n");
     int r = scanf("%99s", input);
     return strcmp(input, "no");
@@ -49,7 +49,10 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
 
     while (0 < (recv_size = s_recv(socket_sender, buf_input, HAMMING_N))) { // loop until sender socket closes
         noise(buf_input, buf_output, random, n, seed); // generate noise
-        printf("Bytes received: %d, %.*s %.*s\n", (int)recv_size, (int)HAMMING_N, buf_input, HAMMING_N, buf_output); // TODO erase
+#ifdef DEBUG_ALL
+        printf("Bytes received: %d, %.*s %.*s\n", (int) recv_size, (int) HAMMING_N, buf_input, HAMMING_N,
+               buf_output);
+#endif
 
         if (SOCKET_ERROR == (retransmit_size = s_send(socket_receiver, buf_output, HAMMING_N))) {
             printf("Sending failed with error: %d\n", WSAGetLastError());
@@ -64,7 +67,7 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
         printf("Receive failed with error: %d\n", WSAGetLastError());
     }
 
-    printf("retransmitted %d bytes, flipped %d bits\n", (int)total_retransmit_size / 8, (int)0);
+    printf("retransmitted %d bytes, flipped %d bits\n", (int) total_retransmit_size / 8, (int) 0);
 }
 
 int main(int argc, char *argv[]) {
@@ -76,10 +79,11 @@ int main(int argc, char *argv[]) {
     parse_channel_args(argc, argv, &random, &n, &seed);
 
     s_startup(&wsaData);
+    char *my_ip = get_my_ip();
 
     SOCKET socket_listen, socket_sender, socket_recv;
     s_socket(&socket_listen);
-    s_bind(&socket_listen, "127.0.0.1", 0); // TODO get self ip
+    s_bind(&socket_listen, my_ip, 0);
     s_listen(&socket_listen);
 
     printf("sender socket: ");

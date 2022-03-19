@@ -68,10 +68,14 @@ static void send_file(SOCKET *socket, FILE *fp) {
     int sent_size;
 
     char *file_bits = file_to_bits(fp, &file_size_in_bits);
+    if (NULL == file_bits)
+        return;
 
     for (int i = 0; i < file_size_in_bits; i += HAMMING_K) {
         encode(file_bits + i, buf_output); // encode with hamming
-        printf("Bytes received: %.*s %.*s\n", HAMMING_K, file_bits + i, HAMMING_N, buf_output); // TODO erase
+#ifdef DEBUG_ALL
+        printf("Bytes received: %.*s %.*s\n", HAMMING_K, file_bits + i, HAMMING_N, buf_output);
+#endif
         if (SOCKET_ERROR == (sent_size = s_send(socket, buf_output, HAMMING_N))) {
             printf("Sending failed with error: %d\n", WSAGetLastError());
             break;

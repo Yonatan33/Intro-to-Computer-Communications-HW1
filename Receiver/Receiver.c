@@ -64,10 +64,10 @@ static void recv_file(SOCKET *socket, FILE *fp) {
     int next_bit = 0;
 
     while (0 < (recv_size = s_recv(socket, buf_input, HAMMING_N))) {
-        printf("Bytes received: %d, %.*s\n", (int)recv_size, HAMMING_N, buf_input); // TODO erase
         total_corrected += decode(buf_input, buf_output); // decode with hamming
-        printf("Bytes received: %d, %.*s %.*s\n", (int)recv_size, HAMMING_N, buf_input, HAMMING_K, buf_output); // TODO erase
-
+#ifdef DEBUG_ALL
+        printf("Bytes received: %d, %.*s %.*s\n", (int)recv_size, HAMMING_N, buf_input, HAMMING_K, buf_output);
+#endif
         // write to file
         for (int i = 0; i < HAMMING_K; i++) {
             bits_buf[next_bit] = buf_output[i];

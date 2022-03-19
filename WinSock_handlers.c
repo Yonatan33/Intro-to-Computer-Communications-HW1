@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "WinSock_handlers.h"
 
-void s_print(const SOCKET *s) { // TODO maybe use the client_addr in accept instead
+void s_print(const SOCKET *s) {
     struct sockaddr_in sock_addr;
     int sock_addr_len = sizeof(sock_addr);
     getsockname(*s, (struct sockaddr *) &sock_addr, &sock_addr_len);
@@ -110,4 +110,20 @@ void s_shutdown(SOCKET *socket, int how) {
         s_cleanup();
         exit(EXIT_FAILURE);
     }
+}
+
+char *get_my_ip() {
+    char hostbuffer[256];
+    struct hostent *host_entry;
+
+    // To retrieve hostname
+    gethostname(hostbuffer, sizeof(hostbuffer));
+
+    // To retrieve host information
+    host_entry = gethostbyname(hostbuffer);
+
+    // To convert an Internet network
+    // address into ASCII string
+    return inet_ntoa(*((struct in_addr *)
+            host_entry->h_addr_list[0]));
 }
