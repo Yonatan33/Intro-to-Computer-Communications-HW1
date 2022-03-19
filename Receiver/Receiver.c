@@ -47,13 +47,7 @@ int decode(char *buf_input, char *buf_output) {
     return error_index != 0;
 }
 
-char bits_to_byte(const char *bits) {
-    char res = 0;
-    for (int i = 7; i >= 0; i--) {
-        res += (char) ((bits[7 - i] - '0') << i);
-    }
-    return res;
-}
+
 
 static void recv_file(SOCKET *socket, FILE *fp) {
     char buf_input[HAMMING_N] = {0};

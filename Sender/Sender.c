@@ -11,84 +11,90 @@
 
 #pragma comment(lib, "Ws2_32.lib")
 
-void encode(const char *input_ptr, char *buf_output) {
-    memset(buf_output, '0', HAMMING_N); // zero output buffer
+void encode(const char *input_ptr, char *output_ptr) {
+    memset(output_ptr, '0', HAMMING_N); // zero output buffer
 
     // copy input to output, skipping hamming bits (indexes 1,2,4,8,16)
     for (int input_i = 1, output_i = 1; output_i <= HAMMING_N; output_i++) {
         if (output_i == 1 || output_i == 2 || output_i == 4 || output_i == 8 || output_i == 16) {
             continue;
         }
-        buf_output[output_i - 1] = input_ptr[input_i - 1];
+        output_ptr[output_i - 1] = input_ptr[input_i - 1];
         input_i++;
     }
 
     // calculate hamming bits
     for (int output_i = 1; output_i <= HAMMING_N; output_i++) {
-        if ('1' == buf_output[output_i - 1]) { // xor with hamming bits
+        if ('1' == output_ptr[output_i - 1]) { // xor with hamming bits
             if (1 == ((output_i) & 1))
-                buf_output[0] = ('0' == buf_output[0]) ? '1' : '0';
+                output_ptr[0] = ('0' == output_ptr[0]) ? '1' : '0';
             if (2 == ((output_i) & 2))
-                buf_output[1] = ('0' == buf_output[1]) ? '1' : '0';
+                output_ptr[1] = ('0' == output_ptr[1]) ? '1' : '0';
             if (4 == ((output_i) & 4))
-                buf_output[3] = ('0' == buf_output[3]) ? '1' : '0';
+                output_ptr[3] = ('0' == output_ptr[3]) ? '1' : '0';
             if (8 == ((output_i) & 8))
-                buf_output[7] = ('0' == buf_output[7]) ? '1' : '0';
+                output_ptr[7] = ('0' == output_ptr[7]) ? '1' : '0';
             if (16 == ((output_i) & 16))
-                buf_output[15] = ('0' == buf_output[15]) ? '1' : '0';
+                output_ptr[15] = ('0' == output_ptr[15]) ? '1' : '0';
         }
     }
 }
 
-char *file_to_bits(FILE *fp, int *size) {
-    // find out file size (int bytes)
-    fseek(fp, 0L, SEEK_END);
-    *size = ftell(fp) * 8;
-    fseek(fp, 0L, SEEK_SET);
+void send_packet(SOCKET *socket, char data_bits[BLOCKS_IN_PACKET][HAMMING_K], int valid_blocks) {
+    char encoded_data_bits[BLOCKS_IN_PACKET][HAMMING_N] = {0};
 
-    // convert file bits to bytes
-    char *file_bits = malloc(*size);
-    if (NULL == file_bits)
-        return NULL;
-
-    char buf;
-    while (0 < fread(&buf, 1, 1, fp)) {
-        for (int i = 7; i >= 0; i--) {
-            int current_bit_index = (ftell(fp) - 1) * 8 + (7 - i);
-            int current_bit = (buf >> i) & 1;
-            file_bits[current_bit_index] = (char) (current_bit + '0');
-        }
+    // encode
+    for (int i = 0; i < valid_blocks; i++) {
+        encode(data_bits[i], encoded_data_bits[i]);
     }
-    return file_bits;
+
+    // resize
+    packet_t p;
+    bit_array_to_packet(encoded_data_bits, &p, valid_blocks);
+
+    // send
+    if (SOCKET_ERROR == s_send(socket, (char *) &p, sizeof(p))) {
+        printf("Sending failed with error: %d\n", WSAGetLastError());
+    } else {
+#ifdef DEBUG_ALL
+        for (int i = 0; i < valid_blocks; i++) {
+            printf("Data Bits Sent: %.*s %.*s\n", HAMMING_K, data_bits[i], HAMMING_N, encoded_data_bits[i]);
+        }
+#endif
+    }
 }
+
 
 static void send_file(SOCKET *socket, FILE *fp) {
-    char buf_output[HAMMING_N] = {0};
-    int file_size_in_bits = 0, total_sent_size = 0;
-    int sent_size;
+    int file_byte_length = 0, bits_sent = 0;
 
-    char *file_bits = file_to_bits(fp, &file_size_in_bits);
-    if (NULL == file_bits)
-        return;
+    char data_bits[BLOCKS_IN_PACKET][HAMMING_K] = {0};
 
-    for (int i = 0; i < file_size_in_bits; i += HAMMING_K) {
-        encode(file_bits + i, buf_output); // encode with hamming
-#ifdef DEBUG_ALL
-        printf("Bytes received: %.*s %.*s\n", HAMMING_K, file_bits + i, HAMMING_N, buf_output);
-#endif
-        if (SOCKET_ERROR == (sent_size = s_send(socket, buf_output, HAMMING_N))) {
-            printf("Sending failed with error: %d\n", WSAGetLastError());
-            break;
+    char buf;
+    int bit_index = 0;
+    while (0 < fread(&buf, 1, 1, fp)) {
+        file_byte_length++;
+        byte_to_bits(buf, ((char *) data_bits) + bit_index);
+        bit_index += BITS_IN_BYTE;
+
+        if (bit_index == BLOCKS_IN_PACKET * BITS_IN_BYTE) {
+            send_packet(socket, data_bits, BLOCKS_IN_PACKET);
+            memset(data_bits, 0, BLOCKS_IN_PACKET * HAMMING_K);
+            bits_sent += bit_index * HAMMING_N / HAMMING_K;
+            bit_index = 0;
         }
-        total_sent_size += sent_size;
     }
-    fclose(fp); // TODO free file_bits
-    printf("file length: %d bytes\n", file_size_in_bits / 8);
-    printf("sent: %d bytes\n", total_sent_size / 8);
+    if (bit_index > 0) { // send partial packet
+        send_packet(socket, data_bits, bit_index / (BITS_IN_BYTE * BLOCK_BYTE_SIZE));
+        bits_sent += bit_index  * HAMMING_N / HAMMING_K;
+    }
+
+    fclose(fp);
+    printf("file length: %d bytes\n", file_byte_length);
+    printf("sent: %d bytes\n", bits_sent / BITS_IN_BYTE);
 }
 
 int main(int argc, char *argv[]) {
-
     WSADATA wsaData;
     SOCKET socket;
     FILE *fp;
