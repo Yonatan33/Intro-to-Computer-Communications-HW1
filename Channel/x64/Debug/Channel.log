@@ -1,1 +1,5 @@
-﻿
+﻿  Common.c
+  WinSock_handlers.c
+  Channel.c
+  Generating Code...
+  Channel.vcxproj -> C:\Users\Ofir\Source\Repos\Yonatan33\Intro-to-Computer-Communications-HW1\x64\Debug\Channel.exe

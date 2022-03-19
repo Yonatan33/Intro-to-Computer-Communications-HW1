@@ -1,10 +1,12 @@
 /* Ofir Yoffe - 303166318, Yonatan Gartenberg - 311126205 */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <WinSock2.h>
-#include "../Utils/Common.h"
-#include "../Utils/WinSock_handlers.h"
+#include "../Common.h"
+#include "../WinSock_handlers.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -62,9 +64,9 @@ static void recv_file(SOCKET *socket, FILE *fp) {
     int next_bit = 0;
 
     while (0 < (recv_size = s_recv(socket, buf_input, HAMMING_N))) {
-        printf("Bytes received: %d, %.*s\n", recv_size, HAMMING_N, buf_input); // TODO erase
+        printf("Bytes received: %d, %.*s\n", (int)recv_size, HAMMING_N, buf_input); // TODO erase
         total_corrected += decode(buf_input, buf_output); // decode with hamming
-        printf("Bytes received: %d, %.*s %.*s\n", recv_size, HAMMING_N, buf_input, HAMMING_K, buf_output); // TODO erase
+        printf("Bytes received: %d, %.*s %.*s\n", (int)recv_size, HAMMING_N, buf_input, HAMMING_K, buf_output); // TODO erase
 
         // write to file
         for (int i = 0; i < HAMMING_K; i++) {
@@ -84,9 +86,9 @@ static void recv_file(SOCKET *socket, FILE *fp) {
         printf("Sending failed with error: %d\n", WSAGetLastError());
     }
     fclose(fp);
-    printf("received: %d bytes\n", total_recv_size / 8);
-    printf("wrote: %d bytes\n", total_write_size);
-    printf("corrected %d errors\n", total_corrected);
+    printf("received: %d bytes\n", (int)total_recv_size / 8);
+    printf("wrote: %d bytes\n", (int)total_write_size);
+    printf("corrected %d errors\n", (int)total_corrected);
 }
 
 int main(int argc, char *argv[]) {

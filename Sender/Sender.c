@@ -1,11 +1,13 @@
 /* Ofir Yoffe - 303166318, Yonatan Gartenberg - 311126205 */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <WinSock2.h>
 #include <math.h>
-#include "../Utils/Common.h"
-#include "../Utils/WinSock_handlers.h"
+#include "../Common.h"
+#include "../WinSock_handlers.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -46,6 +48,9 @@ char *file_to_bits(FILE *fp, int *size) {
 
     // convert file bits to bytes
     char *file_bits = malloc(*size);
+    if (NULL == file_bits)
+        return NULL;
+
     char buf;
     while (0 < fread(&buf, 1, 1, fp)) {
         for (int i = 7; i >= 0; i--) {

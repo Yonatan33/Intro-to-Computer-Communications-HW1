@@ -1,0 +1,5 @@
+C:/Users/Ofir/source/repos/Yonatan33/Intro-to-Computer-Communications-HW1/out/build/x64-Debug (default)/CMakeFiles/Sender.dir
+C:/Users/Ofir/source/repos/Yonatan33/Intro-to-Computer-Communications-HW1/out/build/x64-Debug (default)/CMakeFiles/Channel.dir
+C:/Users/Ofir/source/repos/Yonatan33/Intro-to-Computer-Communications-HW1/out/build/x64-Debug (default)/CMakeFiles/edit_cache.dir
+C:/Users/Ofir/source/repos/Yonatan33/Intro-to-Computer-Communications-HW1/out/build/x64-Debug (default)/CMakeFiles/Receiver.dir
+C:/Users/Ofir/source/repos/Yonatan33/Intro-to-Computer-Communications-HW1/out/build/x64-Debug (default)/CMakeFiles/rebuild_cache.dir

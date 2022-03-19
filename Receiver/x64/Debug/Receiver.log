@@ -1,4 +1,5 @@
-﻿  Receiver.c
-C:\Users\USER\source\repos\Intro to communication PA1\Receiver\Receiver.c(65,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\USER\source\repos\Intro to communication PA1\Receiver\Receiver.c(74,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Receiver.vcxproj -> C:\Users\USER\source\repos\Intro to communication PA1\x64\Debug\Receiver.exe
+﻿  Common.c
+  WinSock_handlers.c
+  Receiver.c
+  Generating Code...
+  Receiver.vcxproj -> C:\Users\Ofir\Source\Repos\Yonatan33\Intro-to-Computer-Communications-HW1\x64\Debug\Receiver.exe

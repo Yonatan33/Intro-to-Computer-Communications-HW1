@@ -1,11 +1,13 @@
 /* Ofir Yoffe - 303166318, Yonatan Gartenberg - 311126205 */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <WinSock2.h>
 #include <stdbool.h>
-#include "../Utils/Common.h"
-#include "../Utils/WinSock_handlers.h"
+#include "../Common.h"
+#include "../WinSock_handlers.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -26,9 +28,9 @@ void parse_channel_args(int argc, char *argv[], bool *flag_random, int *n, int *
 }
 
 int read_continue_from_user() {
-    char input[MAX_INPUT];
+    char input[MAX_INPUT] = { 0 };
     printf("continue? (yes/no)\n");
-    scanf("%99s", input);
+    int r = scanf("%99s", input);
     return strcmp(input, "no");
 }
 
@@ -48,7 +50,7 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
 
     while (0 < (recv_size = s_recv(socket_sender, buf_input, HAMMING_N))) { // loop until sender socket closes
         noise(buf_input, buf_output, random, n, seed); // generate noise
-        printf("Bytes received: %d, %.*s %.*s\n", recv_size, HAMMING_N, buf_input, HAMMING_N, buf_output); // TODO erase
+        printf("Bytes received: %d, %.*s %.*s\n", (int)recv_size, (int)HAMMING_N, buf_input, HAMMING_N, buf_output); // TODO erase
 
         if (SOCKET_ERROR == (retransmit_size = s_send(socket_receiver, buf_output, HAMMING_N))) {
             printf("Sending failed with error: %d\n", WSAGetLastError());
@@ -63,7 +65,7 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
         printf("Receive failed with error: %d\n", WSAGetLastError());
     }
 
-    printf("retransmitted %d bytes, flipped %d bits\n", total_retransmit_size / 8, 0);
+    printf("retransmitted %d bytes, flipped %d bits\n", (int)total_retransmit_size / 8, (int)0);
 }
 
 int main(int argc, char *argv[]) {

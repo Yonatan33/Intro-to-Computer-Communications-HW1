@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.17)
 project(Intro_to_Computer_Communications_HW1 C)
 
 set(CMAKE_C_STANDARD 11)
