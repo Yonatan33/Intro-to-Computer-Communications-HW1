@@ -7,21 +7,21 @@ include_directories(Utils)
 
 add_executable(Channel
         Channel/Channel.c
-        Utils/Common.h
-        Utils/Common.c
-        Utils/WinSock_handlers.h
-        Utils/WinSock_handlers.c)
+        Common.h
+        Common.c
+        WinSock_handlers.h
+        WinSock_handlers.c)
 
 add_executable(Receiver
         Receiver/Receiver.c
-        Utils/Common.h
-        Utils/Common.c
-        Utils/WinSock_handlers.h
-        Utils/WinSock_handlers.c)
+        Common.h
+        Common.c
+        WinSock_handlers.h
+        WinSock_handlers.c)
 
 add_executable(Sender
         Sender/Sender.c
-        Utils/Common.h
-        Utils/Common.c
-        Utils/WinSock_handlers.h
-        Utils/WinSock_handlers.c)
+        Common.h
+        Common.c
+        WinSock_handlers.h
+        WinSock_handlers.c)

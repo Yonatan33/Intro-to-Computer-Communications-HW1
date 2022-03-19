@@ -78,7 +78,7 @@ static void send_file(SOCKET *socket, FILE *fp) {
         }
         total_sent_size += sent_size;
     }
-    fclose(fp);
+    fclose(fp); // TODO free file_bits
     printf("file length: %d bytes\n", file_size_in_bits / 8);
     printf("sent: %d bytes\n", total_sent_size / 8);
 }

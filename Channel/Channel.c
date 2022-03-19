@@ -47,7 +47,6 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
     size_t total_retransmit_size = 0;
     size_t recv_size, retransmit_size;
 
-
     while (0 < (recv_size = s_recv(socket_sender, buf_input, HAMMING_N))) { // loop until sender socket closes
         noise(buf_input, buf_output, random, n, seed); // generate noise
         printf("Bytes received: %d, %.*s %.*s\n", (int)recv_size, (int)HAMMING_N, buf_input, HAMMING_N, buf_output); // TODO erase
