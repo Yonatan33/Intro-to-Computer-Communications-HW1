@@ -21,12 +21,12 @@ int check_parity(const char *buf_input, int len, int index) {
     return parity - '0';
 }
 
-int decode(char *buf_input, char *buf_output) {
+int decode(char buf_input[HAMMING_N], char buf_output[HAMMING_K]) {
     memset(buf_output, 0, HAMMING_K); // zero output buffer
 
     // calculate error index
     int error_index = 0;
-    for (int i=0;i<=4;i++){
+    for (int i = 0; i <= 4; i++) {
         error_index |= check_parity(buf_input, HAMMING_N, 1 << i) << i;
     }
 
@@ -47,46 +47,60 @@ int decode(char *buf_input, char *buf_output) {
     return error_index != 0;
 }
 
-
-
-static void recv_file(SOCKET *socket, FILE *fp) {
-    char buf_input[HAMMING_N] = {0};
-    char buf_output[HAMMING_K] = {0};
-    size_t total_recv_size = 0, total_write_size = 0, total_corrected = 0;
-    size_t recv_size;
+int write_to_file(FILE *fp, const char *decoded_data_bits, int encoded_bits) {
+    int total_write_size = 0;
     char bits_buf[8];
     int next_bit = 0;
 
-    while (0 < (recv_size = s_recv(socket, buf_input, HAMMING_N))) {
-        total_corrected += decode(buf_input, buf_output); // decode with hamming
-#ifdef DEBUG_ALL
-        printf("Bytes received: %d, %.*s %.*s\n", (int)recv_size, HAMMING_N, buf_input, HAMMING_K, buf_output);
-#endif
-        // write to file
-        for (int i = 0; i < HAMMING_K; i++) {
-            bits_buf[next_bit] = buf_output[i];
-            next_bit++;
-            if (next_bit == 8) {
-                char next_byte = bits_to_byte(bits_buf);
-                total_write_size += fwrite(&next_byte, 1, 1, fp);
-                next_bit = 0;
-            }
+    for (int i = 0; i < encoded_bits; i++) {
+        bits_buf[next_bit] = decoded_data_bits[i];
+        next_bit++;
+        if (next_bit == 8) {
+            char next_byte = bits_to_byte(bits_buf);
+            total_write_size += (int) fwrite(&next_byte, 1, 1, fp);
+            next_bit = 0;
+        }
+    }
+    return total_write_size;
+}
+
+static void recv_file(SOCKET *socket, FILE *fp) {
+    size_t total_bits_recv = 0, total_byte_written = 0, total_errors_corrected = 0;
+    size_t recv_size;
+
+    packet_t p_in = {0};
+    char noised_data_bits[ENCODED_BITS_IN_PACKET] = {0};
+    char decoded_data_bits[ENCODED_BITS_IN_PACKET] = {0};
+
+    while (0 < (recv_size = s_recv(socket, (char *) &p_in, sizeof(p_in)))) {
+        total_bits_recv += p_in.encoded_bits / BITS_IN_BYTE;
+        packet_to_bit_array(&p_in, noised_data_bits);
+        for (int i = 0; i < p_in.encoded_bits / HAMMING_N; i++) {
+            total_errors_corrected += decode(&noised_data_bits[i * HAMMING_N],
+                                             &decoded_data_bits[i * HAMMING_K]); // decode with hamming
         }
 
-        total_recv_size += recv_size;
-        memset(buf_input, 0, HAMMING_N);
+#ifdef DEBUG_ALL
+        for (int i = 0; i < p_in.encoded_bits / HAMMING_K; i++) {
+            printf("Data Bits Sent: %.*s %.*s\n", HAMMING_N, &noised_data_bits[i * HAMMING_N], HAMMING_K,
+                   &decoded_data_bits[i * HAMMING_K]);
+        }
+#endif
+
+        // write to file
+        total_byte_written += write_to_file(fp, decoded_data_bits, p_in.encoded_bits * HAMMING_K / HAMMING_N);
     }
     if (SOCKET_ERROR == recv_size) {
         printf("Sending failed with error: %d\n", WSAGetLastError());
     }
     fclose(fp);
-    printf("received: %d bytes\n", (int)total_recv_size / 8);
-    printf("wrote: %d bytes\n", (int)total_write_size);
-    printf("corrected %d errors\n", (int)total_corrected);
+    printf("received: %d bytes\n", (int) total_bits_recv);
+    printf("wrote: %d bytes\n", (int) total_byte_written);
+    printf("corrected %d errors\n", (int) total_errors_corrected);
 }
 
 int main(int argc, char *argv[]) {
-    setbuf( stdout, 0);
+    setbuf(stdout, 0);
     WSADATA wsaData;
     SOCKET socket;
     FILE *fp;

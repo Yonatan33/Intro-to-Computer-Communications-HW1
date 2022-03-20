@@ -48,15 +48,15 @@ char bits_to_byte(const char *bits) {
     return res;
 }
 
-void bit_array_to_packet(const char bits[BLOCKS_IN_PACKET][HAMMING_N], packet_t *p, int valid_blocks) {
-    for (int i = 0; i < BLOCKS_IN_PACKET; i++) {
-        for (int j = 0; j < BLOCK_BYTE_SIZE; j++) {
-            p->blocks[i][j] = bits_to_byte(&bits[i][j * BITS_IN_BYTE]);
-            p->valid_blocks = valid_blocks;
-        }
+void bit_array_to_packet(const char bits[ENCODED_BITS_IN_PACKET], packet_t *p, int encoded_bits) {
+    for (int i = 0; i < ENCODED_BYTES_IN_PACKET; i++) {
+        p->data[i] = bits_to_byte(&bits[i * BITS_IN_BYTE]);
     }
+    p->encoded_bits = encoded_bits;
 }
 
-void packet_to_bit_array(packet_t *p, char *bits) {
-
+void packet_to_bit_array(packet_t *p, char bits[ENCODED_BITS_IN_PACKET]) {
+    for (int i=0;i< ENCODED_BYTES_IN_PACKET;i++){
+        byte_to_bits(p->data[i], &bits[i * BITS_IN_BYTE]);
+    }
 }

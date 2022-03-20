@@ -34,40 +34,46 @@ int read_continue_from_user() {
     return strcmp(input, "no");
 }
 
-int noise(const char *buf_input, char *buf_output, bool random, int n, int seed) { // TODO fix according to noise
-    memset(buf_output, 0, HAMMING_N); // zero output buffer
-    memcpy(buf_output, buf_input, HAMMING_N);
+int noise(const char *sender_bits, char *receiver_bits, int encoded_bits_len, bool random, int n,
+          int seed) { // TODO fix according to noise
+    memcpy(receiver_bits, sender_bits, encoded_bits_len);
     return 0; // flipped bits
 }
 
 void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int n, int seed) {
-    char buf_input[HAMMING_N] = {0};
-    char buf_output[HAMMING_N] = {0};
+    size_t recv_size;
+    int total_bits_retransmitted = 0, bits_flipped = 0;
 
-    size_t total_retransmit_size = 0;
-    size_t recv_size, retransmit_size;
+    packet_t p_in = {0}, p_out = {0};
+    char encoded_data_bits[ENCODED_BITS_IN_PACKET] = {0};
+    char noised_data_bits[ENCODED_BITS_IN_PACKET] = {0};
 
-    while (0 < (recv_size = s_recv(socket_sender, buf_input, HAMMING_N))) { // loop until sender socket closes
-        noise(buf_input, buf_output, random, n, seed); // generate noise
+    while (0 < (recv_size = s_recv(socket_sender, (char *) &p_in, sizeof(p_in)))) { // loop until sender socket closes
+        packet_to_bit_array(&p_in, encoded_data_bits);
+        bits_flipped += noise(encoded_data_bits, noised_data_bits, p_in.encoded_bits, random, n,
+                              seed); // generate noise
+        bit_array_to_packet(noised_data_bits, &p_out, p_in.encoded_bits);
+
 #ifdef DEBUG_ALL
-        printf("Bytes received: %d, %.*s %.*s\n", (int) recv_size, (int) HAMMING_N, buf_input, HAMMING_N,
-               buf_output);
+        for (int i = 0; i < p_in.encoded_bits / HAMMING_N; i++) {
+            printf("Data Bits Sent: %.*s %.*s\n", HAMMING_N, &encoded_data_bits[i * HAMMING_N], HAMMING_N,
+                   &noised_data_bits[i * HAMMING_N]);
+        }
 #endif
 
-        if (SOCKET_ERROR == (retransmit_size = s_send(socket_receiver, buf_output, HAMMING_N))) {
+        if (SOCKET_ERROR == s_send(socket_receiver, (char *) &p_out, sizeof(p_out))) {
             printf("Sending failed with error: %d\n", WSAGetLastError());
             break;
         } else {
-            total_retransmit_size += retransmit_size;
+            total_bits_retransmitted += p_out.encoded_bits;
         }
-
-        memset(buf_input, 0, HAMMING_N);
     }
     if (recv_size < 0) { // sender socket error
         printf("Receive failed with error: %d\n", WSAGetLastError());
     }
 
-    printf("retransmitted %d bytes, flipped %d bits\n", (int) total_retransmit_size / 8, (int) 0);
+    printf("retransmitted %d bytes, flipped %d bits\n", total_bits_retransmitted / BITS_IN_BYTE,
+           bits_flipped / BITS_IN_BYTE);
 }
 
 int main(int argc, char *argv[]) {
@@ -81,20 +87,25 @@ int main(int argc, char *argv[]) {
     s_startup(&wsaData);
     char *my_ip = get_my_ip();
 
-    SOCKET socket_listen, socket_sender, socket_recv;
-    s_socket(&socket_listen);
-    s_bind(&socket_listen, my_ip, 0);
-    s_listen(&socket_listen);
+    SOCKET socket_listen_sender, socket_listen_recv, socket_sender, socket_recv;
+
+    s_socket(&socket_listen_sender);
+    s_socket(&socket_listen_recv);
+
+    s_bind(&socket_listen_sender, my_ip, 0);
+    s_bind(&socket_listen_recv, my_ip, 0);
+
+    s_listen(&socket_listen_sender);
+    s_listen(&socket_listen_recv);
 
     printf("sender socket: ");
-    s_print(&socket_listen);
-
+    s_print(&socket_listen_sender);
     printf("receiver socket: ");
-    s_print(&socket_listen); // TODO port doesn't change because listen puts multiple sockets on the same port
+    s_print(&socket_listen_recv);
 
     do {
-        s_accept(&socket_listen, &socket_sender);
-        s_accept(&socket_listen, &socket_recv);
+        s_accept(&socket_listen_sender, &socket_sender);
+        s_accept(&socket_listen_recv, &socket_recv);
 
         main_loop(&socket_sender, &socket_recv, random, n, seed);
 
@@ -102,9 +113,11 @@ int main(int argc, char *argv[]) {
         s_shutdown(&socket_recv, SD_BOTH);
         s_close(&socket_sender);
         s_close(&socket_recv);
+
     } while (read_continue_from_user()); // loop until "no"
 
-    s_close(&socket_listen); // No need to listen to other connections
+    s_close(&socket_listen_sender);
+    s_close(&socket_listen_recv);
 
     s_cleanup();
 

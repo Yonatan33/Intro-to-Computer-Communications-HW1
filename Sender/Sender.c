@@ -40,25 +40,26 @@ void encode(const char *input_ptr, char *output_ptr) {
     }
 }
 
-void send_packet(SOCKET *socket, char data_bits[BLOCKS_IN_PACKET][HAMMING_K], int valid_blocks) {
-    char encoded_data_bits[BLOCKS_IN_PACKET][HAMMING_N] = {0};
+void send_packet(SOCKET *socket, char data_bits[DATA_BITS_IN_PACKET], int data_bits_len) {
+    char encoded_data_bits[ENCODED_BITS_IN_PACKET] = {0};
 
     // encode
-    for (int i = 0; i < valid_blocks; i++) {
-        encode(data_bits[i], encoded_data_bits[i]);
+    for (int i = 0; i < data_bits_len / HAMMING_K; i++) {
+        encode(&data_bits[i * HAMMING_K], &encoded_data_bits[i * HAMMING_N]);
     }
 
     // resize
     packet_t p;
-    bit_array_to_packet(encoded_data_bits, &p, valid_blocks);
+    bit_array_to_packet(encoded_data_bits, &p, data_bits_len * HAMMING_N / HAMMING_K);
 
     // send
     if (SOCKET_ERROR == s_send(socket, (char *) &p, sizeof(p))) {
         printf("Sending failed with error: %d\n", WSAGetLastError());
     } else {
 #ifdef DEBUG_ALL
-        for (int i = 0; i < valid_blocks; i++) {
-            printf("Data Bits Sent: %.*s %.*s\n", HAMMING_K, data_bits[i], HAMMING_N, encoded_data_bits[i]);
+        for (int i = 0; i < data_bits_len / HAMMING_K; i++) {
+            printf("Data Bits Sent: %.*s %.*s\n", HAMMING_K, &data_bits[i * HAMMING_K], HAMMING_N,
+                   &encoded_data_bits[i * HAMMING_N]);
         }
 #endif
     }
@@ -66,9 +67,9 @@ void send_packet(SOCKET *socket, char data_bits[BLOCKS_IN_PACKET][HAMMING_K], in
 
 
 static void send_file(SOCKET *socket, FILE *fp) {
-    int file_byte_length = 0, bits_sent = 0;
+    int file_byte_length = 0, total_bits_sent = 0;
 
-    char data_bits[BLOCKS_IN_PACKET][HAMMING_K] = {0};
+    char data_bits[DATA_BITS_IN_PACKET] = {0};
 
     char buf;
     int bit_index = 0;
@@ -77,21 +78,21 @@ static void send_file(SOCKET *socket, FILE *fp) {
         byte_to_bits(buf, ((char *) data_bits) + bit_index);
         bit_index += BITS_IN_BYTE;
 
-        if (bit_index == BLOCKS_IN_PACKET * BITS_IN_BYTE) {
-            send_packet(socket, data_bits, BLOCKS_IN_PACKET);
-            memset(data_bits, 0, BLOCKS_IN_PACKET * HAMMING_K);
-            bits_sent += bit_index * HAMMING_N / HAMMING_K;
+        if (bit_index == DATA_BITS_IN_PACKET) {
+            send_packet(socket, data_bits, bit_index);
+            memset(data_bits, 0, DATA_BITS_IN_PACKET);
+            total_bits_sent += bit_index * HAMMING_N / HAMMING_K;
             bit_index = 0;
         }
     }
-    if (bit_index > 0) { // send partial packet
-        send_packet(socket, data_bits, bit_index / (BITS_IN_BYTE * BLOCK_BYTE_SIZE));
-        bits_sent += bit_index  * HAMMING_N / HAMMING_K;
+    if (bit_index > 0) { // send last (and maybe) partial packet
+        send_packet(socket, data_bits, bit_index);
+        total_bits_sent += bit_index * HAMMING_N / HAMMING_K;
     }
 
     fclose(fp);
     printf("file length: %d bytes\n", file_byte_length);
-    printf("sent: %d bytes\n", bits_sent / BITS_IN_BYTE);
+    printf("sent: %d bytes\n", total_bits_sent / BITS_IN_BYTE);
 }
 
 int main(int argc, char *argv[]) {

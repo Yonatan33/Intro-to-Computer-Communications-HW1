@@ -5,6 +5,7 @@
 #include <WinSock2.h>
 #include <stdio.h>
 #include "WinSock_handlers.h"
+#include "Common.h"
 
 void s_print(const SOCKET *s) {
     struct sockaddr_in sock_addr;
