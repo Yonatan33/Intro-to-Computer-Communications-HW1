@@ -1,1 +1,10 @@
-﻿
+﻿  Channel.c
+C:\Users\USER\source\repos\Intro to communication PA1\Channel\Channel.c(11,1): warning C4005: 'RAND_MAX': macro redefinition
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt\stdlib.h(348): message : see previous definition of 'RAND_MAX'
+C:\Users\USER\source\repos\Intro to communication PA1\Channel\Channel.c(68,22): warning C4018: '<=': signed/unsigned mismatch
+C:\Users\USER\source\repos\Intro to communication PA1\Channel\Channel.c(46,31): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\USER\source\repos\Intro to communication PA1\Channel\Channel.c(100,16): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\USER\source\repos\Intro to communication PA1\Channel\Channel.c(100,16): message : consider using '%zd' in the format string
+C:\Users\USER\source\repos\Intro to communication PA1\Channel\Channel.c(116,12): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\USER\source\repos\Intro to communication PA1\Channel\Channel.c(116,12): message : consider using '%zd' in the format string
+  Channel.vcxproj -> C:\Users\USER\source\repos\Intro to communication PA1\x64\Debug\Channel.exe

@@ -1,5 +1,5 @@
 /* Ofir Yoffe - 303166318, Yonatan Gartenberg - 311126205 */
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <WinSock2.h>

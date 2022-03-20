@@ -7,6 +7,7 @@
 #include "../Utils/Common.h"
 #include "../Utils/WinSock_handlers.h"
 
+
 #pragma comment(lib, "Ws2_32.lib")
 
 void encode(const char *input_ptr, char *buf_output) {
@@ -85,7 +86,7 @@ int main(int argc, char *argv[]) {
     FILE *fp;
     char *channel_ip;
     int channel_port;
-
+    
     parse_args(argc, argv, &channel_ip, &channel_port);
     s_startup(&wsaData);
     s_socket(&socket);

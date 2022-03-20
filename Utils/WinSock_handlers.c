@@ -1,6 +1,7 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <WinSock2.h>
 #include <stdio.h>
-#include "WinSock_handlers.h"
+#pragma comment(lib, "Ws2_32.lib")
 
 void s_print(const SOCKET *s) { // TODO maybe use the client_addr in accept instead
     struct sockaddr_in sock_addr;

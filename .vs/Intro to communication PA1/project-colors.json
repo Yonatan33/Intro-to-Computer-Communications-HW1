@@ -15,7 +15,17 @@
       "ProjectGuid": "9d517e74-b759-49d7-ad78-38c6139b72eb",
       "DisplayName": "Receiver",
       "ColorIndex": 2
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "27a888cf-5946-442a-955d-6b9d18d4ad40": {
+      "ProjectGuid": "27a888cf-5946-442a-955d-6b9d18d4ad40",
+      "DisplayName": "Channel",
+      "ColorIndex": 3
     }
   },
-  "NextColorIndex": 3
+  "NextColorIndex": 4
 }

@@ -21,6 +21,11 @@
   <ItemGroup>
     <ClCompile Include="Sender.c" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.vcxproj">
+      <Project>{e7bcf31a-dfdd-4ae9-a737-0b7a80114f60}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

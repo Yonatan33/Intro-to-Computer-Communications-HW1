@@ -141,6 +141,11 @@
   <ItemGroup>
     <ClCompile Include="Receiver.c" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.vcxproj">
+      <Project>{e7bcf31a-dfdd-4ae9-a737-0b7a80114f60}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
