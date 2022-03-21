@@ -1,6 +1,7 @@
 /* Ofir Yoffe - 303166318, Yonatan Gartenberg - 311126205 */
 
 #define _CRT_SECURE_NO_WARNINGS
+#define _CRT_RAND_S
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,10 +55,13 @@ void flip_bit(char *pt) {
 int noise(char *receiver_bits, int receiver_bits_len, int *det_count, bool random, int n) {
     int flipped_bits = 0;
     if (random) { // random flip
+        unsigned rand_num;
         for (int i = 0; i < receiver_bits_len; i++) {
-            int rand_num = rand() % 32768; // generates a number in [0,RAND_MAX], 32767 (2^15-1) is default RAND_MAX
-            bool flip = ((rand_num <= (n / 2)) ? true : false); // n/2 to get n/(2^16) instead of (2^15)
-            if (flip) {
+            if (i % 2 == 0) // makes the channel operation faster, we generate a random number for only half of the bits
+                rand_s(&rand_num);
+            else
+                rand_num >>= 16;
+            if ((rand_num & 0xffff) <= n) {
                 flip_bit(&(receiver_bits[i]));
                 flipped_bits++;
             }
