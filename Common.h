@@ -12,7 +12,7 @@
 #define ENCODED_BITS_IN_PACKET      ENCODED_BYTES_IN_PACKET * BITS_IN_BYTE
 #define DATA_BITS_IN_PACKET         ENCODED_BITS_IN_PACKET * HAMMING_K / HAMMING_N
 
-#define DEBUG_ALL                   // TODO comment
+//#define DEBUG_ALL
 
 #include <stdio.h>
 

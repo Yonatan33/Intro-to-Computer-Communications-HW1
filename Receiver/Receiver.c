@@ -21,18 +21,20 @@ int check_parity(const char *buf_input, int len, int index) {
     return parity - '0';
 }
 
-int decode(char buf_input[HAMMING_N], char buf_output[HAMMING_K]) {
+int decode(const char buf_input[HAMMING_N], char buf_output[HAMMING_K]) {
+    char buf_input_temp[HAMMING_N];
+    memcpy(buf_input_temp, buf_input, HAMMING_N);
     memset(buf_output, 0, HAMMING_K); // zero output buffer
 
     // calculate error index
     int error_index = 0;
     for (int i = 0; i <= 4; i++) {
-        error_index |= check_parity(buf_input, HAMMING_N, 1 << i) << i;
+        error_index |= check_parity(buf_input_temp, HAMMING_N, 1 << i) << i;
     }
 
     // correct if needed (error_index != 0)
     if (0 != error_index) {
-        buf_input[error_index - 1] = (buf_input[error_index - 1] == '0') ? '1' : '0';
+        buf_input_temp[error_index - 1] = (buf_input_temp[error_index - 1] == '0') ? '1' : '0';
     }
 
     // copy input to output, skipping hamming bits
@@ -40,7 +42,7 @@ int decode(char buf_input[HAMMING_N], char buf_output[HAMMING_K]) {
         if (input_i == 1 || input_i == 2 || input_i == 4 || input_i == 8 || input_i == 16) {
             continue;
         }
-        buf_output[output_i - 1] = buf_input[input_i - 1];
+        buf_output[output_i - 1] = buf_input_temp[input_i - 1];
         output_i++;
     }
 
@@ -81,8 +83,8 @@ static void recv_file(SOCKET *socket, FILE *fp) {
         }
 
 #ifdef DEBUG_ALL
-        for (int i = 0; i < p_in.encoded_bits / HAMMING_K; i++) {
-            printf("Data Bits Sent: %.*s %.*s\n", HAMMING_N, &noised_data_bits[i * HAMMING_N], HAMMING_K,
+        for (int i = 0; i < p_in.encoded_bits / HAMMING_N; i++) {
+            printf("Data Bits Received: %.*s %.*s\n", HAMMING_N, &noised_data_bits[i * HAMMING_N], HAMMING_K,
                    &decoded_data_bits[i * HAMMING_K]);
         }
 #endif

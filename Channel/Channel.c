@@ -18,10 +18,20 @@ void parse_channel_args(int argc, char *argv[], bool *flag_random, int *n, int *
     }
 
     if (0 == strcmp(argv[1], "-r")) {
+        if (argc < 4 || argc > 4) {
+            printf("Channel Error! no. of arguments != 3");
+            exit(EXIT_FAILURE);
+        }
+
         *flag_random = true;
         *n = strtol(argv[2], NULL, 10);
         *seed = strtol(argv[3], NULL, 10);
     } else {
+        if (argc < 3 || argc > 3) {
+            printf("Channel Error! no. of arguments != 2");
+            exit(EXIT_FAILURE);
+        }
+
         *flag_random = false;
         *n = strtol(argv[2], NULL, 10);
     }
@@ -34,15 +44,42 @@ int read_continue_from_user() {
     return strcmp(input, "no");
 }
 
-int noise(const char *sender_bits, char *receiver_bits, int encoded_bits_len, bool random, int n,
-          int seed) { // TODO fix according to noise
-    memcpy(receiver_bits, sender_bits, encoded_bits_len);
-    return 0; // flipped bits
+void flip_bit(char *pt) {
+    if (*pt == '1')
+        *pt = '0';
+    else
+        *pt = '1';
 }
 
-void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int n, int seed) {
+int noise(char *receiver_bits, int receiver_bits_len, int *det_count, bool random, int n) {
+    int flipped_bits = 0;
+    if (random) { // random flip
+        for (int i = 0; i < receiver_bits_len; i++) {
+            int rand_num = rand() % 32768; // generates a number in [0,RAND_MAX], 32767 (2^15-1) is default RAND_MAX
+            bool flip = ((rand_num <= (n / 2)) ? true : false); // n/2 to get n/(2^16) instead of (2^15)
+            if (flip) {
+                flip_bit(&(receiver_bits[i]));
+                flipped_bits++;
+            }
+        }
+
+    } else {  // deterministic flip
+        for (int i = 0; i < receiver_bits_len; i++) {
+            (*det_count)++;
+            if (*det_count == n) {
+                flip_bit(&(receiver_bits[i]));
+                *det_count = 0;
+                flipped_bits++;
+            }
+        }
+    }
+    return flipped_bits;
+}
+
+void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int n) {
     size_t recv_size;
     int total_bits_retransmitted = 0, bits_flipped = 0;
+    int det_count = 0;
 
     packet_t p_in = {0}, p_out = {0};
     char encoded_data_bits[ENCODED_BITS_IN_PACKET] = {0};
@@ -50,8 +87,8 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
 
     while (0 < (recv_size = s_recv(socket_sender, (char *) &p_in, sizeof(p_in)))) { // loop until sender socket closes
         packet_to_bit_array(&p_in, encoded_data_bits);
-        bits_flipped += noise(encoded_data_bits, noised_data_bits, p_in.encoded_bits, random, n,
-                              seed); // generate noise
+        memcpy(noised_data_bits, encoded_data_bits, p_in.encoded_bits);
+        bits_flipped += noise(noised_data_bits, p_in.encoded_bits, &det_count, random, n); // generate noise
         bit_array_to_packet(noised_data_bits, &p_out, p_in.encoded_bits);
 
 #ifdef DEBUG_ALL
@@ -72,8 +109,7 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
         printf("Receive failed with error: %d\n", WSAGetLastError());
     }
 
-    printf("retransmitted %d bytes, flipped %d bits\n", total_bits_retransmitted / BITS_IN_BYTE,
-           bits_flipped / BITS_IN_BYTE);
+    printf("retransmitted %d bytes, flipped %d bits\n", total_bits_retransmitted / BITS_IN_BYTE, bits_flipped);
 }
 
 int main(int argc, char *argv[]) {
@@ -83,6 +119,7 @@ int main(int argc, char *argv[]) {
     int n, seed;
 
     parse_channel_args(argc, argv, &random, &n, &seed);
+    if (random) srand(seed);
 
     s_startup(&wsaData);
     char *my_ip = get_my_ip();
@@ -107,7 +144,7 @@ int main(int argc, char *argv[]) {
         s_accept(&socket_listen_sender, &socket_sender);
         s_accept(&socket_listen_recv, &socket_recv);
 
-        main_loop(&socket_sender, &socket_recv, random, n, seed);
+        main_loop(&socket_sender, &socket_recv, random, n);
 
         s_shutdown(&socket_sender, SD_BOTH);
         s_shutdown(&socket_recv, SD_BOTH);

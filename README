@@ -1,7 +1,0 @@
-Instructions:
-- run Channel.c
-- copy IPs & ports
-- run Sender.c
-- run Receiver.c
-- enter file name in Sender.c
-- enter file name in Receiver.c
