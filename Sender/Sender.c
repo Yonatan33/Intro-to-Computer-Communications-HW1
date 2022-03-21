@@ -54,7 +54,7 @@ void send_packet(SOCKET *socket, char data_bits[DATA_BITS_IN_PACKET], int data_b
 
     // send
     if (SOCKET_ERROR == s_send(socket, (char *) &p, sizeof(p))) {
-        printf("Sending failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Sending failed with error: %d\n", WSAGetLastError());
     } else {
 #ifdef DEBUG_ALL
         for (int i = 0; i < data_bits_len / HAMMING_K; i++) {

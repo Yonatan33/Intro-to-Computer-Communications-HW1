@@ -18,14 +18,14 @@ void s_print(const SOCKET *s) {
 void s_startup(WSADATA *wsaData) {
     int err = WSAStartup(MAKEWORD(2, 2), wsaData);
     if (NO_ERROR != err) {
-        printf("WSAStartup failed with error: %d\n", err);
+        fprintf(stderr,"WSAStartup failed with error: %d\n", err);
         exit(EXIT_FAILURE);
     }
 }
 
 void s_cleanup() {
     if (SOCKET_ERROR == WSACleanup()) {
-        printf("Cleanup socket failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Cleanup socket failed with error: %d\n", WSAGetLastError());
         exit(EXIT_FAILURE);
     }
 }
@@ -33,7 +33,7 @@ void s_cleanup() {
 void s_socket(SOCKET *s) {
     *s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == *s) {
-        printf("Socket creation failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Socket creation failed with error: %d\n", WSAGetLastError());
         s_cleanup();
         exit(EXIT_FAILURE);
     }
@@ -41,7 +41,7 @@ void s_socket(SOCKET *s) {
 
 void s_close(const SOCKET *socket) {
     if (SOCKET_ERROR == closesocket(*socket)) {
-        printf("Closing socket failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Closing socket failed with error: %d\n", WSAGetLastError());
         s_cleanup();
         exit(EXIT_FAILURE);
     }
@@ -55,7 +55,7 @@ void s_connect(SOCKET *socket, char *dest_ip, u_short dest_port) {
     };
 
     if (SOCKET_ERROR == connect(*socket, (SOCKADDR *) &dest_addr, sizeof(dest_addr))) {
-        printf("Connection failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Connection failed with error: %d\n", WSAGetLastError());
         s_close(socket);
         s_cleanup();
         exit(EXIT_FAILURE);
@@ -70,7 +70,7 @@ void s_bind(SOCKET *socket_listen, char *host_ip, u_short host_port) {
     };
 
     if (SOCKET_ERROR == bind(*socket_listen, (SOCKADDR *) &server_addr, sizeof(server_addr))) {
-        printf("Bind failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Bind failed with error: %d\n", WSAGetLastError());
         s_close(socket_listen);
         s_cleanup();
         exit(EXIT_FAILURE);
@@ -79,7 +79,7 @@ void s_bind(SOCKET *socket_listen, char *host_ip, u_short host_port) {
 
 void s_listen(SOCKET *socket_listen) {
     if (SOCKET_ERROR == listen(*socket_listen, 2)) {
-        printf("Listen failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Listen failed with error: %d\n", WSAGetLastError());
         s_close(socket_listen);
         s_cleanup();
         exit(EXIT_FAILURE);
@@ -89,7 +89,7 @@ void s_listen(SOCKET *socket_listen) {
 void s_accept(SOCKET *socket_listen, SOCKET *socket_client) {
     *socket_client = accept(*socket_listen, NULL, NULL);
     if (INVALID_SOCKET == *socket_client) {
-        printf("Accept failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Accept failed with error: %d\n", WSAGetLastError());
         s_close(socket_listen);
         s_cleanup();
         exit(EXIT_FAILURE);
@@ -106,7 +106,7 @@ int s_recv(const SOCKET *socket, char *recv_buf, int recv_buf_len) {
 
 void s_shutdown(SOCKET *socket, int how) {
     if (SOCKET_ERROR == shutdown(*socket, how)) {
-        printf("Shutdown failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Shutdown failed with error: %d\n", WSAGetLastError());
         s_close(socket);
         s_cleanup();
         exit(EXIT_FAILURE);

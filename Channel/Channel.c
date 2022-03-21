@@ -14,13 +14,13 @@
 
 void parse_channel_args(int argc, char *argv[], bool *flag_random, int *n, int *seed) {
     if (argc < 3 || argc > 4) {
-        printf("Channel Error! no. of arguments < 2 or > 3");
+        fprintf(stderr,"Channel Error! no. of arguments < 2 or > 3");
         exit(EXIT_FAILURE);
     }
 
     if (0 == strcmp(argv[1], "-r")) {
         if (argc < 4 || argc > 4) {
-            printf("Channel Error! no. of arguments != 3");
+            fprintf(stderr,"Channel Error! no. of arguments != 3");
             exit(EXIT_FAILURE);
         }
 
@@ -29,7 +29,7 @@ void parse_channel_args(int argc, char *argv[], bool *flag_random, int *n, int *
         *seed = strtol(argv[3], NULL, 10);
     } else {
         if (argc < 3 || argc > 3) {
-            printf("Channel Error! no. of arguments != 2");
+            fprintf(stderr,"Channel Error! no. of arguments != 2");
             exit(EXIT_FAILURE);
         }
 
@@ -103,14 +103,14 @@ void main_loop(SOCKET *socket_sender, SOCKET *socket_receiver, bool random, int 
 #endif
 
         if (SOCKET_ERROR == s_send(socket_receiver, (char *) &p_out, sizeof(p_out))) {
-            printf("Sending failed with error: %d\n", WSAGetLastError());
+            fprintf(stderr,"Sending failed with error: %d\n", WSAGetLastError());
             break;
         } else {
             total_bits_retransmitted += p_out.encoded_bits;
         }
     }
     if (recv_size < 0) { // sender socket error
-        printf("Receive failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr, "Receive failed with error: %d\n", WSAGetLastError());
     }
 
     printf("retransmitted %d bytes, flipped %d bits\n", total_bits_retransmitted / BITS_IN_BYTE, bits_flipped);

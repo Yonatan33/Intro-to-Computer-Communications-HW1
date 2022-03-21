@@ -8,7 +8,7 @@
 
 void parse_args(int argc, char *argv[], char **channel_ip, int *channel_port) {
     if (argc != 3) {
-        printf("Sender/Channel Error! no. of arguments != 3");
+        fprintf(stderr,"Sender/Channel Error! no. of arguments != 3");
         exit(EXIT_FAILURE);
     }
 
@@ -26,7 +26,7 @@ FILE *read_file_name_from_user(char *mode) {
         FILE *fp;
         fopen_s(&fp, input, mode);
         if (NULL == fp) {
-            printf("File open failed with error: %d\n", errno);
+            fprintf(stderr,"File open failed with error: %d\n", errno);
         }
         return fp;
     }

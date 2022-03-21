@@ -93,7 +93,7 @@ static void recv_file(SOCKET *socket, FILE *fp) {
         total_byte_written += write_to_file(fp, decoded_data_bits, p_in.encoded_bits * HAMMING_K / HAMMING_N);
     }
     if (SOCKET_ERROR == recv_size) {
-        printf("Sending failed with error: %d\n", WSAGetLastError());
+        fprintf(stderr,"Sending failed with error: %d\n", WSAGetLastError());
     }
     fclose(fp);
     printf("received: %d bytes\n", (int) total_bits_recv);
