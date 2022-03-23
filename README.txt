@@ -2,10 +2,10 @@ Ofir Yoffe - 303166318
 Yonatan Gartenberg - 311126205
 
 Instructions:
-1) Run Channel.c
+1) Run Channel.c as specified in the assignment
 2) Copy IPs & Ports
-3) Run Sender.c with arguments
-4) Run Receiver.c with arguments
+3) Run Sender.c with arguments copied
+4) Run Receiver.c with arguments copied
 5) Enter file name in Sender.c
 6) Enter file name in Receiver.c
 7) If you want to proceed:
@@ -29,8 +29,9 @@ The code was written by us using examples from the official documentation of Win
 https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-start-page-2
 
 Bonus:
-We've implemented an efficient operation of the noise generation - we random a 32-bit number using rand_s() and use
-the lower 16-bit for even indexes and upper 16-bit for odd indexes (making the Channel as twice as efficient).
+We've implemented an efficient operation of the random noise generation - we generate a random 32-bit number using rand_s() and use
+the lower 16 bits for even indexes and upper 16-bit for odd indexes, doubling the Channel's efficiency - for every 2 bits we use 1 random generation.
+Had rand_s() was off limits for any reason being, and the only random generation we could use was of 15 bits (0 - RAND_MAX), we would have implemented 2 random generations for the 1st bit, carrying the spare 14 bits to the next 14 generations, thus performing 16 random generations for every 15 bits (instead of 30), which is 47% more efficient.
 
 Limitations:
 - As instructed, we assume inputs are valid.
