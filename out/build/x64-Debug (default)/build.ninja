@@ -51,19 +51,19 @@ build CMakeFiles\Sender.dir\Sender\Sender.c.obj: C_COMPILER__Sender_Debug ..\..\
   TARGET_COMPILE_PDB = CMakeFiles\Sender.dir\
   TARGET_PDB = Sender.pdb
 
-build CMakeFiles\Sender.dir\Utils\Common.c.obj: C_COMPILER__Sender_Debug ..\..\..\Utils\Common.c || cmake_object_order_depends_target_Sender_Debug
+build CMakeFiles\Sender.dir\Common.c.obj: C_COMPILER__Sender_Debug ..\..\..\Common.c || cmake_object_order_depends_target_Sender_Debug
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   INCLUDES = -I..\..\..\Utils
   OBJECT_DIR = CMakeFiles\Sender.dir
-  OBJECT_FILE_DIR = CMakeFiles\Sender.dir\Utils
+  OBJECT_FILE_DIR = CMakeFiles\Sender.dir
   TARGET_COMPILE_PDB = CMakeFiles\Sender.dir\
   TARGET_PDB = Sender.pdb
 
-build CMakeFiles\Sender.dir\Utils\WinSock_handlers.c.obj: C_COMPILER__Sender_Debug ..\..\..\Utils\WinSock_handlers.c || cmake_object_order_depends_target_Sender_Debug
+build CMakeFiles\Sender.dir\WinSock_handlers.c.obj: C_COMPILER__Sender_Debug ..\..\..\WinSock_handlers.c || cmake_object_order_depends_target_Sender_Debug
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   INCLUDES = -I..\..\..\Utils
   OBJECT_DIR = CMakeFiles\Sender.dir
-  OBJECT_FILE_DIR = CMakeFiles\Sender.dir\Utils
+  OBJECT_FILE_DIR = CMakeFiles\Sender.dir
   TARGET_COMPILE_PDB = CMakeFiles\Sender.dir\
   TARGET_PDB = Sender.pdb
 
@@ -75,7 +75,7 @@ build CMakeFiles\Sender.dir\Utils\WinSock_handlers.c.obj: C_COMPILER__Sender_Deb
 #############################################
 # Link the executable Sender.exe
 
-build Sender.exe: C_EXECUTABLE_LINKER__Sender_Debug CMakeFiles\Sender.dir\Sender\Sender.c.obj CMakeFiles\Sender.dir\Utils\Common.c.obj CMakeFiles\Sender.dir\Utils\WinSock_handlers.c.obj
+build Sender.exe: C_EXECUTABLE_LINKER__Sender_Debug CMakeFiles\Sender.dir\Sender\Sender.c.obj CMakeFiles\Sender.dir\Common.c.obj CMakeFiles\Sender.dir\WinSock_handlers.c.obj
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
@@ -104,19 +104,19 @@ build CMakeFiles\Channel.dir\Channel\Channel.c.obj: C_COMPILER__Channel_Debug ..
   TARGET_COMPILE_PDB = CMakeFiles\Channel.dir\
   TARGET_PDB = Channel.pdb
 
-build CMakeFiles\Channel.dir\Utils\Common.c.obj: C_COMPILER__Channel_Debug ..\..\..\Utils\Common.c || cmake_object_order_depends_target_Channel_Debug
+build CMakeFiles\Channel.dir\Common.c.obj: C_COMPILER__Channel_Debug ..\..\..\Common.c || cmake_object_order_depends_target_Channel_Debug
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   INCLUDES = -I..\..\..\Utils
   OBJECT_DIR = CMakeFiles\Channel.dir
-  OBJECT_FILE_DIR = CMakeFiles\Channel.dir\Utils
+  OBJECT_FILE_DIR = CMakeFiles\Channel.dir
   TARGET_COMPILE_PDB = CMakeFiles\Channel.dir\
   TARGET_PDB = Channel.pdb
 
-build CMakeFiles\Channel.dir\Utils\WinSock_handlers.c.obj: C_COMPILER__Channel_Debug ..\..\..\Utils\WinSock_handlers.c || cmake_object_order_depends_target_Channel_Debug
+build CMakeFiles\Channel.dir\WinSock_handlers.c.obj: C_COMPILER__Channel_Debug ..\..\..\WinSock_handlers.c || cmake_object_order_depends_target_Channel_Debug
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   INCLUDES = -I..\..\..\Utils
   OBJECT_DIR = CMakeFiles\Channel.dir
-  OBJECT_FILE_DIR = CMakeFiles\Channel.dir\Utils
+  OBJECT_FILE_DIR = CMakeFiles\Channel.dir
   TARGET_COMPILE_PDB = CMakeFiles\Channel.dir\
   TARGET_PDB = Channel.pdb
 
@@ -128,7 +128,7 @@ build CMakeFiles\Channel.dir\Utils\WinSock_handlers.c.obj: C_COMPILER__Channel_D
 #############################################
 # Link the executable Channel.exe
 
-build Channel.exe: C_EXECUTABLE_LINKER__Channel_Debug CMakeFiles\Channel.dir\Channel\Channel.c.obj CMakeFiles\Channel.dir\Utils\Common.c.obj CMakeFiles\Channel.dir\Utils\WinSock_handlers.c.obj
+build Channel.exe: C_EXECUTABLE_LINKER__Channel_Debug CMakeFiles\Channel.dir\Channel\Channel.c.obj CMakeFiles\Channel.dir\Common.c.obj CMakeFiles\Channel.dir\WinSock_handlers.c.obj
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
@@ -168,19 +168,19 @@ build CMakeFiles\Receiver.dir\Receiver\Receiver.c.obj: C_COMPILER__Receiver_Debu
   TARGET_COMPILE_PDB = CMakeFiles\Receiver.dir\
   TARGET_PDB = Receiver.pdb
 
-build CMakeFiles\Receiver.dir\Utils\Common.c.obj: C_COMPILER__Receiver_Debug ..\..\..\Utils\Common.c || cmake_object_order_depends_target_Receiver_Debug
+build CMakeFiles\Receiver.dir\Common.c.obj: C_COMPILER__Receiver_Debug ..\..\..\Common.c || cmake_object_order_depends_target_Receiver_Debug
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   INCLUDES = -I..\..\..\Utils
   OBJECT_DIR = CMakeFiles\Receiver.dir
-  OBJECT_FILE_DIR = CMakeFiles\Receiver.dir\Utils
+  OBJECT_FILE_DIR = CMakeFiles\Receiver.dir
   TARGET_COMPILE_PDB = CMakeFiles\Receiver.dir\
   TARGET_PDB = Receiver.pdb
 
-build CMakeFiles\Receiver.dir\Utils\WinSock_handlers.c.obj: C_COMPILER__Receiver_Debug ..\..\..\Utils\WinSock_handlers.c || cmake_object_order_depends_target_Receiver_Debug
+build CMakeFiles\Receiver.dir\WinSock_handlers.c.obj: C_COMPILER__Receiver_Debug ..\..\..\WinSock_handlers.c || cmake_object_order_depends_target_Receiver_Debug
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   INCLUDES = -I..\..\..\Utils
   OBJECT_DIR = CMakeFiles\Receiver.dir
-  OBJECT_FILE_DIR = CMakeFiles\Receiver.dir\Utils
+  OBJECT_FILE_DIR = CMakeFiles\Receiver.dir
   TARGET_COMPILE_PDB = CMakeFiles\Receiver.dir\
   TARGET_PDB = Receiver.pdb
 
@@ -192,7 +192,7 @@ build CMakeFiles\Receiver.dir\Utils\WinSock_handlers.c.obj: C_COMPILER__Receiver
 #############################################
 # Link the executable Receiver.exe
 
-build Receiver.exe: C_EXECUTABLE_LINKER__Receiver_Debug CMakeFiles\Receiver.dir\Receiver\Receiver.c.obj CMakeFiles\Receiver.dir\Utils\Common.c.obj CMakeFiles\Receiver.dir\Utils\WinSock_handlers.c.obj
+build Receiver.exe: C_EXECUTABLE_LINKER__Receiver_Debug CMakeFiles\Receiver.dir\Receiver\Receiver.c.obj CMakeFiles\Receiver.dir\Common.c.obj CMakeFiles\Receiver.dir\WinSock_handlers.c.obj
   FLAGS = /DWIN32 /D_WINDOWS /W3 /MDd /Zi /Ob0 /Od /RTC1 -MDd
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib

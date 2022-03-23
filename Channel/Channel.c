@@ -61,7 +61,7 @@ int noise(char *receiver_bits, int receiver_bits_len, int *det_count, bool rando
                 rand_s(&rand_num);
             else
                 rand_num >>= 16;
-            if ((rand_num & 0xffff) <= n) {
+            if ((rand_num & 0xffff) <=(unsigned) n) {
                 flip_bit(&(receiver_bits[i]));
                 flipped_bits++;
             }

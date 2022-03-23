@@ -1,0 +1,77 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.17"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Intro_to_Computer_Communications_HW1",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Channel::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Channel-Debug-763f255514cb4fd80f2d.json",
+					"name" : "Channel",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Receiver::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Receiver-Debug-4913437205346d1e04f0.json",
+					"name" : "Receiver",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Sender::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Sender-Debug-fd84111d7b4205f5e58a.json",
+					"name" : "Sender",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Ofir/source/repos/Yonatan33/Intro-to-Computer-Communications-HW1/out/build/x64-Debug (default)",
+		"source" : "C:/Users/Ofir/source/repos/Yonatan33/Intro-to-Computer-Communications-HW1"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}
