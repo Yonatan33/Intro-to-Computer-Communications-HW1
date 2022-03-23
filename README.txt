@@ -31,7 +31,8 @@ https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-start-pag
 Bonus:
 We've implemented an efficient operation of the random noise generation - we generate a random 32-bit number using rand_s() and use
 the lower 16 bits for even indexes and upper 16-bit for odd indexes, doubling the Channel's efficiency - for every 2 bits we use 1 random generation.
-Had rand_s() was off limits for any reason being, and the only random generation we could use was of 15 bits (0 - RAND_MAX), we would have implemented 2 random generations for the 1st bit, carrying the spare 14 bits to the next 14 generations, thus performing 16 random generations for every 15 bits (instead of 30), which is 47% more efficient.
+Had rand_s() was off limits for any reason being, and the only random generation we could use was of 15 bits (0 - RAND_MAX), we would have implemented 2 random generations for the 1st bit, 
+carrying the spare 14 bits to the next 14 generations, thus performing 16 random generations for every 15 bits (instead of 30), which is 47% more efficient. An example for this implementation is demonstrated in another branch of this project - https://github.com/Yonatan33/Intro-to-Computer-Communications-HW1/tree/Yonatan_branch
 
 Limitations:
 - As instructed, we assume inputs are valid.
